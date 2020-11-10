@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hello.mapper.QuestionBackMapper">
+    
+    <resultMap type="QuestionBack" id="QuestionBackResult">
+        <result property="bId"    column="b_id"    />
+        <result property="backName"    column="back_name"    />
+        <result property="pId"    column="p_id"    />
+        <result property="backquestion"    column="backquestion"    />
+        <result property="bDate"    column="b_date"    />
+    </resultMap>
+
+    <sql id="selectQuestionBackVo">
+        select b_id, back_name, p_id, backquestion, b_date from question_back
+    </sql>
+
+    <select id="selectQuestionBackList" parameterType="QuestionBack" resultMap="QuestionBackResult">
+        <include refid="selectQuestionBackVo"/>
+        <where>  
+            <if test="backName != null  and backName != ''"> and back_name like concat('%', #{backName}, '%')</if>
+            <if test="pId != null "> and p_id = #{pId}</if>
+            <if test="backquestion != null  and backquestion != ''"> and backquestion = #{backquestion}</if>
+            <if test="bDate != null "> and b_date = #{bDate}</if>
+        </where>
+    </select>
+    
+    <select id="selectQuestionBackById" parameterType="Long" resultMap="QuestionBackResult">
+        <include refid="selectQuestionBackVo"/>
+        where b_id = #{bId}
+    </select>
+        
+    <insert id="insertQuestionBack" parameterType="QuestionBack" useGeneratedKeys="true" keyProperty="bId">
+        insert into question_back
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="backName != null">back_name,</if>
+            <if test="pId != null">p_id,</if>
+            <if test="backquestion != null">backquestion,</if>
+            <if test="bDate != null">b_date,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="backName != null">#{backName},</if>
+            <if test="pId != null">#{pId},</if>
+            <if test="backquestion != null">#{backquestion},</if>
+            <if test="bDate != null">#{bDate},</if>
+         </trim>
+    </insert>
+
+    <update id="updateQuestionBack" parameterType="QuestionBack">
+        update question_back
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="backName != null">back_name = #{backName},</if>
+            <if test="pId != null">p_id = #{pId},</if>
+            <if test="backquestion != null">backquestion = #{backquestion},</if>
+            <if test="bDate != null">b_date = #{bDate},</if>
+        </trim>
+        where b_id = #{bId}
+    </update>
+
+    <delete id="deleteQuestionBackById" parameterType="Long">
+        delete from question_back where b_id = #{bId}
+    </delete>
+
+    <delete id="deleteQuestionBackByIds" parameterType="String">
+        delete from question_back where b_id in 
+        <foreach item="bId" collection="array" open="(" separator="," close=")">
+            #{bId}
+        </foreach>
+    </delete>
+
+</mapper>

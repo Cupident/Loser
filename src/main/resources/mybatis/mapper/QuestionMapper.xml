@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hello.mapper.QuestionMapper">
+    
+    <resultMap type="Question" id="QuestionResult">
+        <result property="pId"    column="p_id"    />
+        <result property="askquestion"    column="askquestion"    />
+        <result property="qDetails"    column="q_details"    />
+        <result property="status"    column="status"    />
+        <result property="qDate"    column="q_date"    />
+    </resultMap>
+
+    <sql id="selectQuestionVo">
+        select p_id, askquestion, q_details, status, q_date from question
+    </sql>
+
+    <select id="selectQuestionList" parameterType="Question" resultMap="QuestionResult">
+        <include refid="selectQuestionVo"/>
+        <where>  
+            <if test="askquestion != null  and askquestion != ''"> and askquestion = #{askquestion}</if>
+            <if test="qDetails != null  and qDetails != ''"> and q_details = #{qDetails}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="qDate != null "> and q_date = #{qDate}</if>
+        </where>
+    </select>
+    
+    <select id="selectQuestionById" parameterType="Long" resultMap="QuestionResult">
+        <include refid="selectQuestionVo"/>
+        where p_id = #{pId}
+    </select>
+        
+    <insert id="insertQuestion" parameterType="Question" useGeneratedKeys="true" keyProperty="pId">
+        insert into question
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="askquestion != null">askquestion,</if>
+            <if test="qDetails != null">q_details,</if>
+            <if test="status != null">status,</if>
+            <if test="qDate != null">q_date,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="askquestion != null">#{askquestion},</if>
+            <if test="qDetails != null">#{qDetails},</if>
+            <if test="status != null">#{status},</if>
+            <if test="qDate != null">#{qDate},</if>
+         </trim>
+    </insert>
+
+    <update id="updateQuestion" parameterType="Question">
+        update question
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="askquestion != null">askquestion = #{askquestion},</if>
+            <if test="qDetails != null">q_details = #{qDetails},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="qDate != null">q_date = #{qDate},</if>
+        </trim>
+        where p_id = #{pId}
+    </update>
+
+    <delete id="deleteQuestionById" parameterType="Long">
+        delete from question where p_id = #{pId}
+    </delete>
+
+    <delete id="deleteQuestionByIds" parameterType="String">
+        delete from question where p_id in 
+        <foreach item="pId" collection="array" open="(" separator="," close=")">
+            #{pId}
+        </foreach>
+    </delete>
+
+</mapper>

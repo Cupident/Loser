@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hello.mapper.BusCompanyMapper">
+    
+    <resultMap type="BusCompany" id="BusCompanyResult">
+        <result property="comId"    column="com_id"    />
+        <result property="comNumber"    column="com_number"    />
+        <result property="comName"    column="com_name"    />
+        <result property="cityId"    column="city_id"    />
+        <result property="phone"    column="phone"    />
+        <result property="address"    column="address"    />
+    </resultMap>
+
+    <sql id="selectBusCompanyVo">
+        select com_id, com_number, com_name, city_id, phone, address from bus_company
+    </sql>
+
+    <select id="selectBusCompanyList" parameterType="BusCompany" resultMap="BusCompanyResult">
+        <include refid="selectBusCompanyVo"/>
+        <where>  
+            <if test="comNumber != null "> and com_number = #{comNumber}</if>
+            <if test="comName != null  and comName != ''"> and com_name like concat('%', #{comName}, '%')</if>
+            <if test="cityId != null  and cityId != ''"> and city_id = #{cityId}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+        </where>
+    </select>
+    
+    <select id="selectBusCompanyById" parameterType="Long" resultMap="BusCompanyResult">
+        <include refid="selectBusCompanyVo"/>
+        where com_id = #{comId}
+    </select>
+        
+    <insert id="insertBusCompany" parameterType="BusCompany" useGeneratedKeys="true" keyProperty="comId">
+        insert into bus_company
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="comNumber != null">com_number,</if>
+            <if test="comName != null">com_name,</if>
+            <if test="cityId != null">city_id,</if>
+            <if test="phone != null">phone,</if>
+            <if test="address != null">address,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="comNumber != null">#{comNumber},</if>
+            <if test="comName != null">#{comName},</if>
+            <if test="cityId != null">#{cityId},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="address != null">#{address},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBusCompany" parameterType="BusCompany">
+        update bus_company
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="comNumber != null">com_number = #{comNumber},</if>
+            <if test="comName != null">com_name = #{comName},</if>
+            <if test="cityId != null">city_id = #{cityId},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="address != null">address = #{address},</if>
+        </trim>
+        where com_id = #{comId}
+    </update>
+
+    <delete id="deleteBusCompanyById" parameterType="Long">
+        delete from bus_company where com_id = #{comId}
+    </delete>
+
+    <delete id="deleteBusCompanyByIds" parameterType="String">
+        delete from bus_company where com_id in 
+        <foreach item="comId" collection="array" open="(" separator="," close=")">
+            #{comId}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hello.mapper.BusDriverMapper">
+    
+    <resultMap type="BusDriver" id="BusDriverResult">
+        <result property="drId"    column="dr_id"    />
+        <result property="drName"    column="dr_name"    />
+        <result property="drTel"    column="dr_tel"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectBusDriverVo">
+        select dr_id, dr_name, dr_tel, status from bus_driver
+    </sql>
+
+    <select id="selectBusDriverList" parameterType="BusDriver" resultMap="BusDriverResult">
+        <include refid="selectBusDriverVo"/>
+        <where>  
+            <if test="drName != null  and drName != ''"> and dr_name like concat('%', #{drName}, '%')</if>
+            <if test="drTel != null  and drTel != ''"> and dr_tel = #{drTel}</if>
+            <if test="status != null "> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectBusDriverById" parameterType="Long" resultMap="BusDriverResult">
+        <include refid="selectBusDriverVo"/>
+        where dr_id = #{drId}
+    </select>
+        
+    <insert id="insertBusDriver" parameterType="BusDriver" useGeneratedKeys="true" keyProperty="drId">
+        insert into bus_driver
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="drName != null">dr_name,</if>
+            <if test="drTel != null">dr_tel,</if>
+            <if test="status != null">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="drName != null">#{drName},</if>
+            <if test="drTel != null">#{drTel},</if>
+            <if test="status != null">#{status},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBusDriver" parameterType="BusDriver">
+        update bus_driver
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="drName != null">dr_name = #{drName},</if>
+            <if test="drTel != null">dr_tel = #{drTel},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where dr_id = #{drId}
+    </update>
+
+    <delete id="deleteBusDriverById" parameterType="Long">
+        delete from bus_driver where dr_id = #{drId}
+    </delete>
+
+    <delete id="deleteBusDriverByIds" parameterType="String">
+        delete from bus_driver where dr_id in 
+        <foreach item="drId" collection="array" open="(" separator="," close=")">
+            #{drId}
+        </foreach>
+    </delete>
+
+</mapper>

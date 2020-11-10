@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hello.mapper.BusTeamMapper">
+    
+    <resultMap type="BusTeam" id="BusTeamResult">
+        <result property="busId"    column="bus_id"    />
+        <result property="carname"    column="carname"    />
+        <result property="administratorId"    column="administrator_id"    />
+        <result property="comNumber"    column="com_number"    />
+        <result property="lineId"    column="line_id"    />
+    </resultMap>
+
+    <sql id="selectBusTeamVo">
+        select bus_id, carname, administrator_id, com_number, line_id from bus_team
+    </sql>
+
+    <select id="selectBusTeamList" parameterType="BusTeam" resultMap="BusTeamResult">
+        <include refid="selectBusTeamVo"/>
+        <where>  
+            <if test="carname != null  and carname != ''"> and carname like concat('%', #{carname}, '%')</if>
+            <if test="administratorId != null "> and administrator_id = #{administratorId}</if>
+            <if test="comNumber != null "> and com_number = #{comNumber}</if>
+            <if test="lineId != null "> and line_id = #{lineId}</if>
+        </where>
+    </select>
+    
+    <select id="selectBusTeamById" parameterType="Long" resultMap="BusTeamResult">
+        <include refid="selectBusTeamVo"/>
+        where bus_id = #{busId}
+    </select>
+        
+    <insert id="insertBusTeam" parameterType="BusTeam" useGeneratedKeys="true" keyProperty="busId">
+        insert into bus_team
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="carname != null">carname,</if>
+            <if test="administratorId != null">administrator_id,</if>
+            <if test="comNumber != null">com_number,</if>
+            <if test="lineId != null">line_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="carname != null">#{carname},</if>
+            <if test="administratorId != null">#{administratorId},</if>
+            <if test="comNumber != null">#{comNumber},</if>
+            <if test="lineId != null">#{lineId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBusTeam" parameterType="BusTeam">
+        update bus_team
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="carname != null">carname = #{carname},</if>
+            <if test="administratorId != null">administrator_id = #{administratorId},</if>
+            <if test="comNumber != null">com_number = #{comNumber},</if>
+            <if test="lineId != null">line_id = #{lineId},</if>
+        </trim>
+        where bus_id = #{busId}
+    </update>
+
+    <delete id="deleteBusTeamById" parameterType="Long">
+        delete from bus_team where bus_id = #{busId}
+    </delete>
+
+    <delete id="deleteBusTeamByIds" parameterType="String">
+        delete from bus_team where bus_id in 
+        <foreach item="busId" collection="array" open="(" separator="," close=")">
+            #{busId}
+        </foreach>
+    </delete>
+
+</mapper>

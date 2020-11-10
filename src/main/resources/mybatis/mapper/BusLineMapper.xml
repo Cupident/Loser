@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hello.mapper.BusLineMapper">
+    
+    <resultMap type="BusLine" id="BusLineResult">
+        <result property="lineId"    column="line_id"    />
+        <result property="lineName"    column="line_name"    />
+        <result property="comNumber"    column="com_number"    />
+        <result property="lineType"    column="line_type"    />
+        <result property="upLength"    column="up_length"    />
+        <result property="downLength"    column="down_length"    />
+        <result property="upStarttime"    column="up_starttime"    />
+        <result property="upOvertime"    column="up_overtime"    />
+        <result property="downStarttime"    column="down_starttime"    />
+        <result property="downOvertime"    column="down_overtime"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectBusLineVo">
+        select line_id, line_name, com_number, line_type, up_length, down_length, up_starttime, up_overtime, down_starttime, down_overtime, status from bus_line
+    </sql>
+
+    <select id="selectBusLineList" parameterType="BusLine" resultMap="BusLineResult">
+        <include refid="selectBusLineVo"/>
+        <where>  
+            <if test="lineName != null  and lineName != ''"> and line_name like concat('%', #{lineName}, '%')</if>
+            <if test="comNumber != null "> and com_number = #{comNumber}</if>
+            <if test="lineType != null  and lineType != ''"> and line_type = #{lineType}</if>
+            <if test="upLength != null "> and up_length = #{upLength}</if>
+            <if test="downLength != null "> and down_length = #{downLength}</if>
+            <if test="upStarttime != null "> and up_starttime = #{upStarttime}</if>
+            <if test="upOvertime != null "> and up_overtime = #{upOvertime}</if>
+            <if test="downStarttime != null "> and down_starttime = #{downStarttime}</if>
+            <if test="downOvertime != null "> and down_overtime = #{downOvertime}</if>
+            <if test="status != null "> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectBusLineById" parameterType="Long" resultMap="BusLineResult">
+        <include refid="selectBusLineVo"/>
+        where line_id = #{lineId}
+    </select>
+        
+    <insert id="insertBusLine" parameterType="BusLine" useGeneratedKeys="true" keyProperty="lineId">
+        insert into bus_line
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="lineName != null">line_name,</if>
+            <if test="comNumber != null">com_number,</if>
+            <if test="lineType != null">line_type,</if>
+            <if test="upLength != null">up_length,</if>
+            <if test="downLength != null">down_length,</if>
+            <if test="upStarttime != null">up_starttime,</if>
+            <if test="upOvertime != null">up_overtime,</if>
+            <if test="downStarttime != null">down_starttime,</if>
+            <if test="downOvertime != null">down_overtime,</if>
+            <if test="status != null">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="lineName != null">#{lineName},</if>
+            <if test="comNumber != null">#{comNumber},</if>
+            <if test="lineType != null">#{lineType},</if>
+            <if test="upLength != null">#{upLength},</if>
+            <if test="downLength != null">#{downLength},</if>
+            <if test="upStarttime != null">#{upStarttime},</if>
+            <if test="upOvertime != null">#{upOvertime},</if>
+            <if test="downStarttime != null">#{downStarttime},</if>
+            <if test="downOvertime != null">#{downOvertime},</if>
+            <if test="status != null">#{status},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBusLine" parameterType="BusLine">
+        update bus_line
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="lineName != null">line_name = #{lineName},</if>
+            <if test="comNumber != null">com_number = #{comNumber},</if>
+            <if test="lineType != null">line_type = #{lineType},</if>
+            <if test="upLength != null">up_length = #{upLength},</if>
+            <if test="downLength != null">down_length = #{downLength},</if>
+            <if test="upStarttime != null">up_starttime = #{upStarttime},</if>
+            <if test="upOvertime != null">up_overtime = #{upOvertime},</if>
+            <if test="downStarttime != null">down_starttime = #{downStarttime},</if>
+            <if test="downOvertime != null">down_overtime = #{downOvertime},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where line_id = #{lineId}
+    </update>
+
+    <delete id="deleteBusLineById" parameterType="Long">
+        delete from bus_line where line_id = #{lineId}
+    </delete>
+
+    <delete id="deleteBusLineByIds" parameterType="String">
+        delete from bus_line where line_id in 
+        <foreach item="lineId" collection="array" open="(" separator="," close=")">
+            #{lineId}
+        </foreach>
+    </delete>
+
+</mapper>

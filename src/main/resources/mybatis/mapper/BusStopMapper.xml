@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hello.mapper.BusStopMapper">
+    
+    <resultMap type="BusStop" id="BusStopResult">
+        <result property="stopId"    column="stop_id"    />
+        <result property="stopName"    column="stop_name"    />
+        <result property="stopDirection"    column="stop_direction"    />
+        <result property="stopType"    column="stop_type"    />
+        <result property="stopSpeed"    column="stop_speed"    />
+        <result property="stopAreaid"    column="stop_areaid"    />
+        <result property="stopStatus"    column="stop_status"    />
+        <result property="stopText"    column="stop_text"    />
+        <result property="stopXuni"    column="stop_xuni"    />
+    </resultMap>
+
+    <sql id="selectBusStopVo">
+        select stop_id, stop_name, stop_direction, stop_type, stop_speed, stop_areaid, stop_status, stop_text, stop_xuni from bus_stop
+    </sql>
+
+    <select id="selectBusStopList" parameterType="BusStop" resultMap="BusStopResult">
+        <include refid="selectBusStopVo"/>
+        <where>  
+            <if test="stopName != null  and stopName != ''"> and stop_name like concat('%', #{stopName}, '%')</if>
+            <if test="stopDirection != null  and stopDirection != ''"> and stop_direction = #{stopDirection}</if>
+            <if test="stopType != null  and stopType != ''"> and stop_type = #{stopType}</if>
+            <if test="stopSpeed != null "> and stop_speed = #{stopSpeed}</if>
+            <if test="stopAreaid != null "> and stop_areaid = #{stopAreaid}</if>
+            <if test="stopStatus != null "> and stop_status = #{stopStatus}</if>
+            <if test="stopText != null  and stopText != ''"> and stop_text = #{stopText}</if>
+            <if test="stopXuni != null "> and stop_xuni = #{stopXuni}</if>
+        </where>
+    </select>
+    
+    <select id="selectBusStopById" parameterType="Long" resultMap="BusStopResult">
+        <include refid="selectBusStopVo"/>
+        where stop_id = #{stopId}
+    </select>
+        
+    <insert id="insertBusStop" parameterType="BusStop" useGeneratedKeys="true" keyProperty="stopId">
+        insert into bus_stop
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stopName != null">stop_name,</if>
+            <if test="stopDirection != null">stop_direction,</if>
+            <if test="stopType != null">stop_type,</if>
+            <if test="stopSpeed != null">stop_speed,</if>
+            <if test="stopAreaid != null">stop_areaid,</if>
+            <if test="stopStatus != null">stop_status,</if>
+            <if test="stopText != null">stop_text,</if>
+            <if test="stopXuni != null">stop_xuni,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stopName != null">#{stopName},</if>
+            <if test="stopDirection != null">#{stopDirection},</if>
+            <if test="stopType != null">#{stopType},</if>
+            <if test="stopSpeed != null">#{stopSpeed},</if>
+            <if test="stopAreaid != null">#{stopAreaid},</if>
+            <if test="stopStatus != null">#{stopStatus},</if>
+            <if test="stopText != null">#{stopText},</if>
+            <if test="stopXuni != null">#{stopXuni},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBusStop" parameterType="BusStop">
+        update bus_stop
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="stopName != null">stop_name = #{stopName},</if>
+            <if test="stopDirection != null">stop_direction = #{stopDirection},</if>
+            <if test="stopType != null">stop_type = #{stopType},</if>
+            <if test="stopSpeed != null">stop_speed = #{stopSpeed},</if>
+            <if test="stopAreaid != null">stop_areaid = #{stopAreaid},</if>
+            <if test="stopStatus != null">stop_status = #{stopStatus},</if>
+            <if test="stopText != null">stop_text = #{stopText},</if>
+            <if test="stopXuni != null">stop_xuni = #{stopXuni},</if>
+        </trim>
+        where stop_id = #{stopId}
+    </update>
+
+    <delete id="deleteBusStopById" parameterType="Long">
+        delete from bus_stop where stop_id = #{stopId}
+    </delete>
+
+    <delete id="deleteBusStopByIds" parameterType="String">
+        delete from bus_stop where stop_id in 
+        <foreach item="stopId" collection="array" open="(" separator="," close=")">
+            #{stopId}
+        </foreach>
+    </delete>
+
+</mapper>
